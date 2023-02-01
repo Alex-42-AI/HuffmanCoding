@@ -5,6 +5,10 @@ Hufman coding is an algorithm for compression of a sequence of elements without 
 3) Generating the binary codes for each letter inder the tree's leaves (left is 0 and right is 1);
 4) Replacing each consequitive letter in the original message with its binary code.
 
+The `encode` function accepts a text and returns a sequence of bits for it via a Hufman tree of this text.
+
+The `decode` function works the other way around - it takes a Hufman tree and a sequence of bits and returns the original message based on the input.
+
 # Code instructions
 
 In the `main` function information is read from the three input files.
