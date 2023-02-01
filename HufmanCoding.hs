@@ -87,7 +87,7 @@ makeTreeAndLeaves s = (makeTree (helperTree s ""), (tail (init (helperLeaves (in
         then 
           (if cs == "" 
           then error "Invalid string!" 
-          else reverse (init (helperTree cs ""))) 
+          else reverse (helperTree (if (head cs) == ' ' then (tail cs) else cs) ""))
         else helperLeaves cs
 
 
@@ -110,7 +110,7 @@ increment el (x:xs) = if el == (fst x) then (el, (snd x + 1)):xs else x:(increme
 
 
 histogram :: Eq a => [a] -> Dict a Int
-histogram s = helper s []
+histogram s = reverse (helper s [])
   where
     helper [] res = res
     helper (c:cs) res = helper cs (increment c res)
