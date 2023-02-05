@@ -1,1 +1,1 @@
-(Node 11 (Node 5 Null Null) (Node 6 (Node 2 Null Null) (Node 4 (Node 2 Null Null) (Node 2 (Node 1 Null Null) (Node 1 Null Null)))),"abrcd")
+Node 11 (Leaf 5 'a') (Node 6 (Leaf 2 'b') (Node 4 (Leaf 2 'r') (Node 2 (Leaf 1 'c') (Leaf 1 'd'))))
