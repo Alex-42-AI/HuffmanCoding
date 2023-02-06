@@ -1,8 +1,8 @@
 # HufmanCoding
 Hufman coding is an algorithm for compression of a sequence of elements without loss of data. It works in four major steps:
 1) Generating a histogram (frequency list) of the elements on the sequence;
-2) Creating a Hufman tree, based on it (the Hufman tree is an ordered pair of a binary tree and a list of the unique elements under each leaf;
-3) Generating the binary codes for each letter inder the tree's leaves (left is 0 and right is 1);
+2) Creating a Hufman tree, based on it - a binary tree of integers with a character on each leaf;
+3) Generating the binary codes for each letter on the tree's leaves (left is 0 and right is 1);
 4) Replacing each consequitive letter in the original message with its binary code.
 
 The `encode` function accepts a text and returns a sequence of bits for it via a Hufman tree of this text.
