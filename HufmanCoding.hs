@@ -2,7 +2,7 @@ import Data.Char
 
 type Dict a b = [(a, b)]
 
-data Tree = Null | Leaf Int Char | Node Int Tree Tree
+data Tree = Leaf Int Char | Node Int Tree Tree
   deriving (Eq, Show)
 
 data Bit = O | I
@@ -12,11 +12,9 @@ fromMaybe :: Maybe a -> a
 fromMaybe Nothing = error "Nothing!"
 fromMaybe (Just x) = x
 
-makeTree :: String -> Tree
-makeTree "" = Null
-makeTree "Null" = Null
-makeTree "Null)" = Null
-makeTree ('N':r) = (Node (fromMaybe (getValue r 0)) (makeTree ('(':helper (tail (fromMaybe (rest r))) 1 "")) (makeTree (right (tail (fromMaybe (rest r))) 1)))
+makeTree :: String -> Maybe Tree
+makeTree "" = Nothing
+makeTree ('N':r) = Just (Node (fromMaybe (getValue r 0)) (fromMaybe (makeTree ('(':helper (tail (fromMaybe (rest r))) 1 ""))) (fromMaybe (makeTree (right (tail (fromMaybe (rest r))) 1))))
   where
     getValue "" _ = Nothing
     getValue (c:cs) res = if (isDigit c) then getValue cs (10 * res + (digitToInt c)) else (if res > 0 then Just res else getValue cs res)
@@ -32,7 +30,7 @@ makeTree ('N':r) = (Node (fromMaybe (getValue r 0)) (makeTree ('(':helper (tail 
     right :: String -> Int -> String
     right "" _ = ""
     right (c:cs) n = if c == '(' then (if n == 0 then c:cs else right cs (n + 1)) else (if c == ')' then right cs (n - 1) else right cs n)
-makeTree ('L':r) = (Leaf (fromMaybe (getValue r 0)) (fromMaybe (getSymbol r)))
+makeTree ('L':r) = Just (Leaf (fromMaybe (getValue r 0)) (fromMaybe (getSymbol r)))
   where
     getValue "" _ = Nothing
     getValue (c:cs) res = if (isDigit c) then getValue cs (10 * res + (digitToInt c)) else (if res > 0 then Just res else getValue cs res)
@@ -57,7 +55,7 @@ main = do
     print (encode word)
     tree <- readFile "decodeTreeInput.txt"
     bits <- readFile "decodeBitsInput.txt"
-    print (decode (makeTree tree) (fromMaybe (makeBits bits)))
+    print (decode (fromMaybe (makeTree tree)) (fromMaybe (makeBits bits)))
 
 value :: Eq a => a -> Dict a b -> Maybe b
 value _ [] = Nothing
@@ -84,28 +82,25 @@ least (p:ps) = Just (helper (fst p) ps (snd p))
     helper el (x:xs) val = if (snd x) < val then helper (fst x) xs (snd x) else helper el xs val
 
 
-root :: Tree -> Maybe Int
-root Null = Nothing
-root (Leaf v _) = Just v
-root (Node n _ _) = Just n
+root :: Tree -> Int
+root (Leaf v _) = v
+root (Node n _ _) = n
 
 
 hufmanTree :: String -> Tree
-hufmanTree "" = Null
 hufmanTree s = helper (filter (\x -> x /= (least_often s)) s) (Leaf (fromMaybe (value (least_often s) (histogram s))) (least_often s))
   where
     least_often _str = fromMaybe (least (histogram _str))
-    helper :: String -> Tree -> Tree
     helper str res = if str == "" then res else
-        helper (filter (\x -> x /= (least_often str)) str) (Node ((fromMaybe (root res)) + (fromMaybe (value (least_often str) (histogram str))))
+        helper (filter (\x -> x /= (least_often str)) str) (Node ((root res) + (fromMaybe (value (least_often str) (histogram str))))
         (Leaf (fromMaybe (value (least_often str) (histogram str))) (least_often str)) res)
 
 
 encode_histogram :: String -> Dict Char [Bit]
+encode_histogram "" = []
 encode_histogram s = helper tree_uniques [] []
   where
     tree_uniques = hufmanTree s
-    helper Null _ _ = []
     helper (Leaf _ d) code res = (d, code):res
     helper (Node _ lt rt) code res = (left_res ++ right_res)
       where
@@ -124,8 +119,7 @@ encode s = helper s
 decode :: Tree -> [Bit] -> String
 decode tree code = helper tree code ""
   where
-    helper Null _ _ = ""
-    helper (Leaf _ d) bits res = helper tree bits (res ++ [d])
+    helper (Leaf _ c) bits res = helper tree bits (res ++ [c])
     helper _ [] res = res
     helper (Node _ lt _) (O:bs) res = helper lt bs res
     helper (Node _ _ rt) (I:bs) res = helper rt bs res
