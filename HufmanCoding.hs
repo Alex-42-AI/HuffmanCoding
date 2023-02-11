@@ -3,7 +3,7 @@ import Data.Char
 type Dict a b = [(a, b)]
 
 data Tree = Leaf Int Char | Node Int Tree Tree
-  deriving (Eq, Show)
+  deriving (Show, Eq)
 
 data Bit = O | I
   deriving (Show, Eq)
